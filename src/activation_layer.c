@@ -24,7 +24,45 @@ matrix forward_activation_layer(layer l, matrix x)
     // relu(x)     = x if x > 0 else 0
     // lrelu(x)    = x if x > 0 else .01 * x
     // softmax(x)  = e^{x_i} / sum(e^{x_j}) for all x_j in the same row 
-
+    int i, j;
+    switch (a) {
+        case LOGISTIC:
+            for (i = 0; i < y.rows; ++i) {
+                for (j = 0; j < y.cols; ++j) {
+                    float x = y.data[i * y.cols + j];
+                    y.data[i * y.cols + j] = 1.0 / (1.0 + exp(-x));
+                }
+            }
+            break;
+        case RELU:
+            for (i = 0; i < y.rows; ++i) {
+                for (j = 0; j < y.cols; ++j) {
+                    float z = y.data[i * y.cols + j];
+                    y.data[i * y.cols + j] = (z > 0) ? z : 0;
+                }
+            }
+            break;
+        case SOFTMAX:
+            for (i = 0; i < y.rows; ++i) {
+                float sum = 0;
+                for (j = 0; j < y.cols; ++j) {
+                    float x = y.data[i * y.cols + j];
+                    y.data[i * y.cols + j] = exp(x);
+                    sum += y.data[i * y.cols + j];
+                }
+                for (j = 0; j < y.cols; ++j) {
+                    y.data[i * y.cols + j] /= sum;
+                }
+            }
+            break;
+        case LRELU:
+            for (i = 0; i < y.rows; ++i) {
+                for (j = 0; j < y.cols; ++j) {
+                    float x = y.data[i * y.cols + j];
+                    y.data[i * y.cols + j] = (x > 0) ? x : 0.01 * x;
+                }
+            }
+    }
     return y;
 }
 
@@ -47,7 +85,35 @@ matrix backward_activation_layer(layer l, matrix dy)
     // d/dx relu(x)     = 1 if x > 0 else 0
     // d/dx lrelu(x)    = 1 if x > 0 else 0.01
     // d/dx softmax(x)  = 1
-
+    int i, j;
+    switch (a) {
+        case LOGISTIC:
+            for (i = 0; i < dx.rows; ++i) {
+                for (j = 0; j < dx.cols; ++j) {
+                    float f_x = 1.0 / (1.0 + exp(-x.data[i * x.cols + j]));
+                    dx.data[i * x.cols + j] *= f_x * (1 - f_x);
+                }
+            }
+            break;
+        case RELU:
+            for (i = 0; i < dx.rows; ++i) {
+                for (j = 0; j < dx.cols; ++j) {
+                    if (x.data[i * x.cols + j] <= 0) {
+                        dx.data[i * x.cols + j] = 0;
+                    }
+                }
+            }
+            break;
+        case LRELU:
+            for (i = 0; i < dx.rows; ++i) {
+                for (j = 0; j < dx.cols; ++j) {
+                    if (x.data[i * x.cols + j] <= 0) {
+                        dx.data[i * x.cols + j] *= .01;
+                    }
+                }
+            }
+            break;
+    }
     return dx;
 }
 

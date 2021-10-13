@@ -589,17 +589,17 @@ void test_matrix_speed()
 
 void run_tests()
 {
-    //make_matrix_test();
+    // make_matrix_test();
     test_copy_matrix();
     test_axpy_matrix();
     test_transpose_matrix();
     test_matmul();
     test_activation_layer();
     test_connected_layer();
-    test_im2col();
-    test_col2im();
-    test_maxpool_layer();
-    test_batchnorm_layer();
+    // test_im2col();
+    // test_col2im();
+    // test_maxpool_layer();
+    // test_batchnorm_layer();
 
     printf("%d tests, %d passed, %d failed\n", tests_total, tests_total-tests_fail, tests_fail);
 }
