@@ -50,7 +50,9 @@ matrix forward_connected_layer(layer l, matrix x)
 
     // TODO: 3.1 - run the network forward
     matrix xw = matmul(x, l.w);
-    return forward_bias(xw, l.b);
+    matrix result = forward_bias(xw, l.b);
+    free_matrix(xw);
+    return result;
 }
 
 // Run a connected layer backward
@@ -72,9 +74,16 @@ matrix backward_connected_layer(layer l, matrix dy)
 
     matrix db = backward_bias(dy); // Change this
     axpy_matrix(1, db, l.db);
-    matrix dw = matmul(transpose_matrix(x), dy);
+    matrix xt = transpose_matrix(x);
+    matrix dw = matmul(xt, dy);
     axpy_matrix(1, dw, l.dw);
-    matrix dx = matmul(dy, transpose_matrix(l.w));
+    matrix wt = transpose_matrix(l.w);
+    matrix dx = matmul(dy, wt);
+    
+    free_matrix(db);
+    free_matrix(dw);
+    free_matrix(xt);
+    free_matrix(wt);
     return dx;
 }
 
