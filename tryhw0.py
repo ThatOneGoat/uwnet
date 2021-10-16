@@ -1,6 +1,6 @@
 from uwnet import *
 
-mnist = 1
+mnist = False
 
 inputs = 784 if mnist else 3072
 
@@ -10,9 +10,11 @@ def softmax_model():
     return make_net(l)
 
 def neural_net():
-    l = [   make_connected_layer(inputs, 32),
+    l = [   make_connected_layer(inputs, 512),
             make_activation_layer(RELU),
-            make_connected_layer(32, 10),
+            make_connected_layer(512, 256),
+            make_activation_layer(RELU),
+            make_connected_layer(256, 10),
             make_activation_layer(SOFTMAX)]
     return make_net(l)
 
@@ -31,9 +33,9 @@ batch = 128
 iters = 5000
 rate = .01
 momentum = .9
-decay = .0
+decay = .001
 
-m = softmax_model()
+m = neural_net()
 print("training...")
 train_image_classifier(m, train, batch, iters, rate, momentum, decay)
 print("done")
