@@ -52,12 +52,25 @@ matrix im2col(image im, int size, int stride)
     int outw = (im.w-1)/stride + 1;
     int outh = (im.h-1)/stride + 1;
     int rows = im.c*size*size;
-    int cols = outw * outh;
-    matrix col = make_matrix(rows, cols);
+    matrix col = make_matrix(rows, outw * outh);
 
     // TODO: 5.1
     // Fill in the column matrix with patches from the image
-
+    for (i = 0; i < col.rows; i++) {
+        int kernelIndex = i % (size * size);
+        int kernelCenterOffsetX = (kernelIndex % size) - (size / 2) + (size % 2 ? 0 : 1);
+        int kernelCenterOffsetY = (kernelIndex / size) - (size / 2) + (size % 2 ? 0 : 1);
+        int channel = i / (size * size);
+        for (j = 0; j < col.cols; j++) {
+            int imageX = (j % outw) * stride + kernelCenterOffsetX;
+            int imageY = (j / outw) * stride + kernelCenterOffsetY;
+            if (imageX < 0 || imageX >= im.w || imageY < 0 || imageY >= im.h) {
+                col.data[i * col.cols + j] = 0;
+            } else {
+                col.data[i * col.cols + j] = get_pixel(im, imageX, imageY, channel);
+            }
+        }
+    }
 
 
     return col;
@@ -78,6 +91,21 @@ image col2im(int width, int height, int channels, matrix col, int size, int stri
 
     // TODO: 5.2
     // Add values into image im from the column matrix
+    for (i = 0; i < col.rows; i++) {
+        int kernelIndex = i % (size * size);
+        int kernelCenterOffsetX = (kernelIndex % size) - (size / 2) + (size % 2 ? 0 : 1);
+        int kernelCenterOffsetY = (kernelIndex / size) - (size / 2) + (size % 2 ? 0 : 1);
+        int channel = i / (size * size);
+        for (j = 0; j < col.cols; j++) {
+            int imageX = (j % outw) * stride + kernelCenterOffsetX;
+            int imageY = (j / outw) * stride + kernelCenterOffsetY;
+            if (imageX >= 0 && imageX < im.w && imageY >= 0 && imageY < im.h) {
+                float currentGradient = get_pixel(im, imageX, imageY, channel);
+                float addedGradient = col.data[i * col.cols + j];
+                set_pixel(im, imageX, imageY, channel, currentGradient + addedGradient);
+            }
+        }
+    }
     
 
 
@@ -174,6 +202,12 @@ matrix backward_convolutional_layer(layer l, matrix dy)
 void update_convolutional_layer(layer l, float rate, float momentum, float decay)
 {
     // TODO: 5.3
+    axpy_matrix(decay, l.w, l.dw);
+    axpy_matrix(-rate, l.dw, l.w);
+    scal_matrix(momentum, l.dw);
+
+    axpy_matrix(-rate, l.db, l.b);
+    scal_matrix(momentum, l.db);
 }
 
 // Make a new convolutional layer

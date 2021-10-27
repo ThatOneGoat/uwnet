@@ -596,8 +596,8 @@ void run_tests()
     test_matmul();
     test_activation_layer();
     test_connected_layer();
-    // test_im2col();
-    // test_col2im();
+    test_im2col();
+    test_col2im();
     // test_maxpool_layer();
     // test_batchnorm_layer();
 
