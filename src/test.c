@@ -271,7 +271,6 @@ void test_maxpool_layer()
     im_mat.rows = 1;
     im_mat.cols = im.w*im.h*im.c;
     im_mat.data = im.data;
-
     matrix im_mat3 = {0};
     im_mat3.rows = 1;
     im_mat3.cols = im.w*im.h*im.c;
@@ -285,6 +284,9 @@ void test_maxpool_layer()
 
     matrix truth_max_y = load_matrix("data/test/max_y.matrix");
     matrix truth_max_y3 = load_matrix("data/test/max_y3.matrix");
+    print_matrix(truth_max_y3);
+    printf("\n\n\n");
+    print_matrix(max_y3);
 
     TEST(same_matrix(truth_max_y, max_y));
     TEST(same_matrix(truth_max_y3, max_y3));
@@ -598,7 +600,7 @@ void run_tests()
     test_connected_layer();
     test_im2col();
     test_col2im();
-    // test_maxpool_layer();
+    test_maxpool_layer();
     // test_batchnorm_layer();
 
     printf("%d tests, %d passed, %d failed\n", tests_total, tests_total-tests_fail, tests_fail);

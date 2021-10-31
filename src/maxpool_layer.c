@@ -11,6 +11,7 @@
 // returns: the result of running the layer
 matrix forward_maxpool_layer(layer l, matrix in)
 {
+    printf("data length: %d\n", in.rows * in.cols);
     // Saving our input
     // Probably don't change this
     free_matrix(*l.x);
@@ -19,10 +20,31 @@ matrix forward_maxpool_layer(layer l, matrix in)
     int outw = (l.width-1)/l.stride + 1;
     int outh = (l.height-1)/l.stride + 1;
     matrix out = make_matrix(in.rows, outw*outh*l.channels);
-
     // TODO: 6.1 - iterate over the input and fill in the output with max values
-
-
+    for (int i = 0; i < out.rows; i++) {
+        for (int channel = 0; channel < l.channels; channel++) {
+            for (int j = 0; j < outw * outh; j++) {
+                int centerX = (j % outw) * l.stride;
+                int centerY = (j / outw) * l.stride;
+                int topLeftX = centerX - (l.size - 1) / 2;
+                int topLeftY = centerY - (l.size - 1) / 2;
+                int assignedMax = 0;
+                float max;
+                for (int imageY = topLeftY; imageY < topLeftY + l.size; imageY++) {
+                    for (int imageX = topLeftX; imageX < topLeftX + l.size; imageX++) {
+                        if (imageX >= 0 && imageX < l.width && imageY >= 0 && imageY < l.height) {
+                            float val = in.data[i * in.cols + l.width*(l.height*channel + imageY) + imageX];
+                            if (!assignedMax || max < val) {
+                                assignedMax = 1;
+                                max = val;
+                            }
+                        }
+                    }
+                }
+                out.data[i * out.cols + channel * outw*outh + j] = max;
+            }
+        }
+    }
 
     return out;
 }
@@ -40,7 +62,33 @@ matrix backward_maxpool_layer(layer l, matrix dy)
     // TODO: 6.2 - find the max values in the input again and fill in the
     // corresponding delta with the delta from the output. This should be
     // similar to the forward method in structure.
-
+    for (int i = 0; i < dx.rows; i++) {
+        for (int channel = 0; channel < l.channels; channel++) {
+            for (int j = 0; j < outw * outh; j++) {
+                int centerX = (j % outw) * l.stride;
+                int centerY = (j / outw) * l.stride;
+                int topLeftX = centerX - (l.size - 1) / 2;
+                int topLeftY = centerY - (l.size - 1) / 2;
+                int assignedMax = 0;
+                float max;
+                int maxIndex = -1;
+                for (int imageY = topLeftY; imageY < topLeftY + l.size; imageY++) {
+                    for (int imageX = topLeftX; imageX < topLeftX + l.size; imageX++) {
+                        if (imageX >= 0 && imageX < l.width && imageY >= 0 && imageY < l.height) {
+                            int index = i * in.cols + l.width*(l.height*channel + imageY) + imageX;
+                            float val = in.data[index];
+                            if (!assignedMax || max < val) {
+                                assignedMax = 1;
+                                max = val;
+                                maxIndex = index;
+                            }
+                        }
+                    }
+                }
+                in.data[maxIndex] = dy.data[i * dy.cols + channel * outw*outh + j];
+            }
+        }
+    }
 
 
     return dx;
