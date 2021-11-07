@@ -11,7 +11,6 @@
 // returns: the result of running the layer
 matrix forward_maxpool_layer(layer l, matrix in)
 {
-    printf("data length: %d\n", in.rows * in.cols);
     // Saving our input
     // Probably don't change this
     free_matrix(*l.x);
@@ -85,7 +84,7 @@ matrix backward_maxpool_layer(layer l, matrix dy)
                         }
                     }
                 }
-                in.data[maxIndex] = dy.data[i * dy.cols + channel * outw*outh + j];
+                dx.data[maxIndex] += dy.data[i * dy.cols + channel * outw*outh + j];
             }
         }
     }

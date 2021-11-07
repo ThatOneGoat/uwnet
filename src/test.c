@@ -284,9 +284,6 @@ void test_maxpool_layer()
 
     matrix truth_max_y = load_matrix("data/test/max_y.matrix");
     matrix truth_max_y3 = load_matrix("data/test/max_y3.matrix");
-    print_matrix(truth_max_y3);
-    printf("\n\n\n");
-    print_matrix(max_y3);
 
     TEST(same_matrix(truth_max_y, max_y));
     TEST(same_matrix(truth_max_y3, max_y3));
