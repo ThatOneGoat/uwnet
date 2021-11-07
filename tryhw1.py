@@ -13,23 +13,23 @@ def conv_net():
             make_convolutional_layer(4, 4, 32, 64, 3, 1),
             make_activation_layer(RELU),
             make_maxpool_layer(4, 4, 64, 3, 2),
-            make_connected_layer(186, 10),
+            make_connected_layer(256, 10),
             make_activation_layer(SOFTMAX)]
     return make_net(l)
 def fc_net():
-    l = [   make_connected_layer(3072, 18),
+    l = [   make_connected_layer(3072, 289),
             make_activation_layer(RELU),
-            make_connected_layer(18, 18),
+            make_connected_layer(289, 256),
             make_activation_layer(RELU),
-            make_connected_layer(18, 18),
+            make_connected_layer(256, 200),
             make_activation_layer(RELU),
-            make_connected_layer(18, 18),
+            make_connected_layer(200, 196),
             make_activation_layer(RELU),
-            make_connected_layer(18, 18),
+            make_connected_layer(196, 157),
             make_activation_layer(RELU),
-            make_connected_layer(18, 18),
+            make_connected_layer(157, 152),
             make_activation_layer(RELU),
-            make_connected_layer(18, 10),
+            make_connected_layer(152, 10),
             make_activation_layer(SOFTMAX)]
     return make_net(l)
 
