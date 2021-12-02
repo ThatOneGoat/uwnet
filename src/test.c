@@ -598,7 +598,7 @@ void run_tests()
     test_im2col();
     test_col2im();
     test_maxpool_layer();
-    // test_batchnorm_layer();
+    test_batchnorm_layer();
 
     printf("%d tests, %d passed, %d failed\n", tests_total, tests_total-tests_fail, tests_fail);
 }

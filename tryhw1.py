@@ -46,15 +46,26 @@ rate = .01
 momentum = .9
 decay = .005
 
-m = conv_net()
+# m = conv_net()
+# print("training...")
+# train_image_classifier(m, train, batch, iters, rate, momentum, decay)
+# print("done")
+# print
+
+# print("evaluating conv model...")
+# print("training accuracy: %f", accuracy_net(m, train))
+# print("test accuracy:     %f", accuracy_net(m, test))
+#
+m2 = fc_net()
 print("training...")
-train_image_classifier(m, train, batch, iters, rate, momentum, decay)
+train_image_classifier(m2, train, batch, iters, rate, momentum, decay)
 print("done")
 print
 
-print("evaluating model...")
-print("training accuracy: %f", accuracy_net(m, train))
-print("test accuracy:     %f", accuracy_net(m, test))
+print("evaluating fc model...")
+print("training accuracy: %f", accuracy_net(m2, train))
+print("test accuracy:     %f", accuracy_net(m2, test))
+#
 # To calculate the number of matrix operations, we looked at the convolutional layers
 # and the fully connected layer at the end. For convolution layers, we assumed one data
 # point as input and used the following formula (see maxe_convolutional_layer param names):
@@ -67,5 +78,19 @@ print("test accuracy:     %f", accuracy_net(m, test))
 # How accurate is the fully connected network vs the convnet when they use similar number of operations?
 # Why are you seeing these results? Speculate based on the information you've gathered and what you know about DL and ML.
 # Your answer:
+# convnet train accuracy: .68
+# convnet test accuracy: .64
+
+# fcnet train accuracy: .54
+# fcnet test accuracy: .49
+# 
+# We notice about 15% better accuracy for the convnet when compared to the fcnet.
+# We think this is because convolutional layers are better at extracting spatially
+# related features of images, so with the same number of operations the network is
+# able to derive more useful information than just fully connected layers because it
+# wastes less computation trying to find relationships between unrelated portions of
+# the image. Because convolutional layers do fewer operations for a given
+# input and output size, more information can be preserved with the same total number
+# of operations as data flows through the network.
 #
 
